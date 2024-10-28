@@ -1,0 +1,177 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>添加商品损失信息</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="./hui/css/H-ui.min.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/css/H-ui.admin.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/Hui-iconfont/1.0.8/iconfont.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/layui/css/layui.css" />
+</head>
+
+<body>
+
+	<div id="app">
+		<article class="page-container">
+			<div class="form form-horizontal" id="form-admin-add">
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">损失单号：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="bno" v-model="bno" readonly="readonly" >
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">商品：</label>
+					<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+							<select class="select" v-model="goodsid">
+								<option :value="0">---请选择商品---</option>
+								<option :value="item.goodsid" v-for="item in goods">{{ item.goodsname }}</option>
+							</select>
+						</span> </div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">损失原因：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="reason" v-model="reason" placeholder="请输入损失原因">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">损失数量：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="num" v-model="num" placeholder="请输入损失数量">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">损失日期：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="addtime" v-model="addtime" placeholder="请输入损失日期" @click="getDate4()" readonly="readonly" autocomplete="off">
+					</div>
+				</div>
+
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">经手人：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="manager" v-model="manager" placeholder="请输入经手人">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">损失处理：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="opers" v-model="opers" placeholder="请输入损失处理">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">备注：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="memo" v-model="memo" placeholder="请输入备注">
+					</div>
+				</div>
+				<div class="row cl">
+					<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+						<button class="btn btn-secondary radius" @click.prevent="save()"><i
+								class="Hui-iconfont">&#xe632;</i>提交保存</button>
+						<button class="btn btn-default radius" @click.prevent="reset()">
+							<i class="Hui-iconfont">&#xe68f;</i>取消重置
+						</button>
+					</div>
+				</div>
+			</div>
+		</article>
+	</div>
+
+	<script type="text/javascript" src="./hui/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="./hui/js/H-ui.min.js"></script>
+	<script type="text/javascript" src="./hui/js/H-ui.admin.js"></script>
+
+	<!--此页面业务相关的脚本-->
+	<script type="text/javascript" src="./hui/layui/layui.js"></script>
+	<script type="text/javascript" src="./hui/js/axios.min.js"></script>
+	<script type="text/javascript" src="./hui/js/vue.js"></script>
+	<script type="text/javascript">
+		const vue = new Vue({ // 实例化Vue对象
+			el: '#app',// 绑定作用域
+			data: { //定义数据
+				bno: '', // 定义损失单号数据
+				goodsid: '0', // 定义商品数据
+				reason: '', // 定义损失原因数据
+				num: '', // 定义损失数量数据
+				addtime: '', // 定义损失日期数据
+				manager: '', // 定义经手人数据
+				opers: '', // 定义损失处理数据
+				memo: '', // 定义备注数据
+				goods: {}, // 用来保存商品对象数据
+			},
+			methods: {
+				save: function () {
+					let _this = this;
+					var data = {
+						bno: _this.bno,
+						goodsid: _this.goodsid,
+						reason: _this.reason,
+						num: _this.num,
+						addtime: _this.addtime,
+						manager: _this.manager,
+						opers: _this.opers,
+						memo: _this.memo,
+					};
+					axios.post('http://127.0.0.1:8080/jxc/broken/insertBroken.action', data).then(result => {
+						if (result.data.code > 0) {
+							if (window.confirm('保存成功,是否继续添加？')) {
+								_this.reset();
+							} else {
+								var index = parent.layer.getFrameIndex(window.name);
+								parent.location.reload();
+								parent.layer.close(index);
+							}
+						} else {
+							console.log('保存失败,请稍后再试');
+							alert(result.data.message);
+						}
+					});
+				},
+				reset: function () {
+					this.pageLoad();
+				},
+				pageLoad: function () { // 页面加载
+					this.bno= '';
+					this.goodsid= '0';
+					this.reason= '';
+					this.num= '';
+					this.addtime= '';
+					this.manager= '';
+					this.opers= '';
+					this.memo= '';
+					axios.get('http://127.0.0.1:8080/jxc/broken/createBroken.action').then(result => {
+						this.bno = result.data.bno;
+					});
+				},
+				validate: function () { // 验证输入非空
+				},
+				getDate4: function () { // 日历点击事件
+					var _this = this;
+					var laydate = layui.laydate;
+					laydate.render({
+						elem: '#addtime',
+						show: true,
+						done: function (value) {
+							_this.addtime = value;
+						}
+					})
+				},
+			},
+			created() { // 生命周期相关的函数
+				let _this = this;
+				axios.get('http://127.0.0.1:8080/jxc/goods/getAllGoods.action').then(result => {
+					_this.goods = result.data;
+				});
+				_this.pageLoad();
+			},
+		})
+	</script>
+	<!--/ 此页面业务相关的脚本-->
+
+
+</body>
+
+</html>
+

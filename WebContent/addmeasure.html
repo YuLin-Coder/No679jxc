@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>添加计量单位信息</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="./hui/css/H-ui.min.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/css/H-ui.admin.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/Hui-iconfont/1.0.8/iconfont.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/layui/css/layui.css" />
+</head>
+
+<body>
+
+	<div id="app">
+		<article class="page-container">
+			<div class="form form-horizontal" id="form-admin-add">
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">单位名称：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="measurename" v-model="measurename" placeholder="请输入单位名称">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">备注：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="memo" v-model="memo" placeholder="请输入备注">
+					</div>
+				</div>
+				<div class="row cl">
+					<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+						<button class="btn btn-secondary radius" @click.prevent="save()"><i
+								class="Hui-iconfont">&#xe632;</i>提交保存</button>
+						<button class="btn btn-default radius" @click.prevent="reset()">
+							<i class="Hui-iconfont">&#xe68f;</i>取消重置
+						</button>
+					</div>
+				</div>
+			</div>
+		</article>
+	</div>
+
+	<script type="text/javascript" src="./hui/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="./hui/js/H-ui.min.js"></script>
+	<script type="text/javascript" src="./hui/js/H-ui.admin.js"></script>
+
+	<!--此页面业务相关的脚本-->
+	<script type="text/javascript" src="./hui/layui/layui.js"></script>
+	<script type="text/javascript" src="./hui/js/axios.min.js"></script>
+	<script type="text/javascript" src="./hui/js/vue.js"></script>
+	<script type="text/javascript">
+		const vue = new Vue({ // 实例化Vue对象
+			el: '#app',// 绑定作用域
+			data: { //定义数据
+				measurename: '', // 定义单位名称数据
+				memo: '', // 定义备注数据
+			},
+			methods: {
+				save: function () {
+					let _this = this;
+					var data = {
+						measurename: _this.measurename,
+						memo: _this.memo,
+					};
+					axios.post('http://127.0.0.1:8080/jxc/measure/insertMeasure.action', data).then(result => {
+						if (result.data.code > 0) {
+							if (window.confirm('保存成功,是否继续添加？')) {
+								_this.reset();
+							} else {
+								var index = parent.layer.getFrameIndex(window.name);
+								parent.location.reload();
+								parent.layer.close(index);
+							}
+						} else {
+							console.log('保存失败,请稍后再试');
+						}
+					});
+				},
+				reset: function () {
+					this.pageLoad();
+				},
+				pageLoad: function () { // 页面加载
+					this.measurename= '';
+					this.memo= '';
+					axios.get('http://127.0.0.1:8080/jxc/measure/createMeasure.action').then(result => {
+						_this.bno = result.data.bno;
+					});
+				},
+				validate: function () { // 验证输入非空
+				},
+			},
+			created() { // 生命周期相关的函数
+				let _this = this;
+			},
+		})
+	</script>
+	<!--/ 此页面业务相关的脚本-->
+
+
+</body>
+
+</html>
+

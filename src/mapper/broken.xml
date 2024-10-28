@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 配置关于商品损失表的 MyBatis映射文件 -->
+<!-- namespace：必须与对应的接口全类名一致 id:必须与对应接口的某个对应的方法名一致 -->
+<mapper namespace="com.dao.BrokenDAO">
+	<resultMap type="broken" id="brokenMap">
+		<id property="brokenid" column="brokenid" />
+		<result property="bno" column="bno" />
+		<result property="goodsid" column="goodsid" />
+		<result property="reason" column="reason" />
+		<result property="num" column="num" />
+		<result property="addtime" column="addtime" />
+		<result property="manager" column="manager" />
+		<result property="opers" column="opers" />
+		<result property="memo" column="memo" />
+		<result property="goodsname" column="goodsname" />
+		<!-- 通过外键关联查询  返回封装Goodsname对象 -->
+		<association property="goodsname" column="goodsnameid" select="com.dao.GoodsnameDAO.getGoodsnameById" />
+	</resultMap>
+
+	<!-- 商品损失表 插入SQL语句  BrokenDAO通过ID(insertBroken)调用此配置 -->
+	<insert id="insertBroken" parameterType="broken">  
+		insert into broken(brokenid  , bno  , goodsid  , reason  , num  , addtime  , manager  , opers  , memo ) values(#{brokenid}  , #{bno}   , #{goodsid}   , #{reason}   , #{num}   , #{addtime}   , #{manager}   , #{opers}   , #{memo} )
+	</insert>
+
+	<!-- 商品损失表 更新SQL语句  BrokenDAO通过ID(updateBroken)调用此配置 -->
+	<update id="updateBroken" parameterType="broken">
+		update broken set  bno=#{bno}  , goodsid=#{goodsid}  , reason=#{reason}  , num=#{num}  , addtime=#{addtime}  , manager=#{manager}  , opers=#{opers}  , memo=#{memo}  where brokenid=#{brokenid}
+	</update>
+
+	<!-- 商品损失表 按主键删除SQL语句  BrokenDAO通过ID(deleteBroken)调用此配置 -->
+	<delete id="deleteBroken" parameterType="String">
+		delete from broken where brokenid = #{brokenid}
+	</delete>
+
+	<!-- 商品损失表 查询全部商品损失信息SQL语句  BrokenDAO通过ID(getAllBroken)调用此配置  -->
+	<select id="getAllBroken" resultMap="brokenMap">
+		select a.* , b.goodsname  from broken a , goods b  where 1=1 and a.goodsid = b.goodsid  order by brokenid desc
+	</select>
+
+	<!-- 商品损失表 按主键(brokenid)查询SQL语句 BrokenDAO通过ID(getBrokenById)调用此配置  -->
+	<select id="getBrokenById" parameterType="String" resultMap="brokenMap">
+		select a.* , b.goodsname  from broken a , goods b  where 1=1 and a.goodsid = b.goodsid and brokenid=#{brokenid} order by brokenid desc
+	</select>
+
+	<!-- 商品损失表 按条件精确查询SQL语句 BrokenDAO通过ID(getBrokenByCond)调用此配置  -->
+	<select id="getBrokenByCond" parameterType="broken" resultMap="brokenMap">
+		select a.* , b.goodsname  from broken a , goods b  where 1=1 and a.goodsid = b.goodsid 
+		<if test="bno != null and '' != bno">
+			and a.bno = #{bno}  
+		</if>
+		<if test="goodsid != null and '' != goodsid">
+			and a.goodsid = #{goodsid}  
+		</if>
+		<if test="reason != null and '' != reason">
+			and a.reason = #{reason}  
+		</if>
+		<if test="num != null and '' != num">
+			and a.num = #{num}  
+		</if>
+		<if test="addtime != null and '' != addtime">
+			and a.addtime = #{addtime}  
+		</if>
+		<if test="manager != null and '' != manager">
+			and a.manager = #{manager}  
+		</if>
+		<if test="opers != null and '' != opers">
+			and a.opers = #{opers}  
+		</if>
+		<if test="memo != null and '' != memo">
+			and a.memo = #{memo}  
+		</if>
+	</select>
+
+	<!-- 商品损失表 按条件模糊查询SQL语句 BrokenDAO通过ID(getBrokenByLike)调用此配置  -->
+	<select id="getBrokenByLike" parameterType="broken" resultMap="brokenMap">
+		select a.* , b.goodsname  from broken a , goods b  where 1=1 and a.goodsid = b.goodsid 
+		<if test="bno != null and '' != bno">
+			and a.bno like CONCAT('%', CONCAT(#{bno}, '%'))
+		</if>
+		<if test="goodsid != null and '' != goodsid">
+			and b.goodsname like CONCAT('%', CONCAT(#{goodsid}, '%'))
+		</if>
+		<if test="reason != null and '' != reason">
+			and a.reason like CONCAT('%', CONCAT(#{reason}, '%'))
+		</if>
+		<if test="num != null and '' != num">
+			and a.num like CONCAT('%', CONCAT(#{num}, '%'))
+		</if>
+		<if test="addtime != null and '' != addtime">
+			and a.addtime like CONCAT('%', CONCAT(#{addtime}, '%'))
+		</if>
+		<if test="manager != null and '' != manager">
+			and a.manager like CONCAT('%', CONCAT(#{manager}, '%'))
+		</if>
+		<if test="opers != null and '' != opers">
+			and a.opers like CONCAT('%', CONCAT(#{opers}, '%'))
+		</if>
+		<if test="memo != null and '' != memo">
+			and a.memo like CONCAT('%', CONCAT(#{memo}, '%'))
+		</if>
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

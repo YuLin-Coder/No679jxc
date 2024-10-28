@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 配置关于商品表的 MyBatis映射文件 -->
+<!-- namespace：必须与对应的接口全类名一致 id:必须与对应接口的某个对应的方法名一致 -->
+<mapper namespace="com.dao.GoodsDAO">
+	<resultMap type="goods" id="goodsMap">
+		<id property="goodsid" column="goodsid" />
+		<result property="gno" column="gno" />
+		<result property="goodsname" column="goodsname" />
+		<result property="cateid" column="cateid" />
+		<result property="measureid" column="measureid" />
+		<result property="num" column="num" />
+		<result property="addtime" column="addtime" />
+		<result property="productor" column="productor" />
+		<result property="memo" column="memo" />
+		<result property="catename" column="catename" />
+		<result property="measurename" column="measurename" />
+		<!-- 通过外键关联查询  返回封装Catename对象 -->
+		<association property="catename" column="catenameid" select="com.dao.CatenameDAO.getCatenameById" />
+		<!-- 通过外键关联查询  返回封装Measurename对象 -->
+		<association property="measurename" column="measurenameid" select="com.dao.MeasurenameDAO.getMeasurenameById" />
+	</resultMap>
+
+	<!-- 商品表 插入SQL语句  GoodsDAO通过ID(insertGoods)调用此配置 -->
+	<insert id="insertGoods" parameterType="goods">  
+		insert into goods(goodsid  , gno  , goodsname  , cateid  , measureid  , num  , addtime  , productor  , memo ) values(#{goodsid}  , #{gno}   , #{goodsname}   , #{cateid}   , #{measureid}   , #{num}   , #{addtime}   , #{productor}   , #{memo} )
+	</insert>
+
+	<!-- 商品表 更新SQL语句  GoodsDAO通过ID(updateGoods)调用此配置 -->
+	<update id="updateGoods" parameterType="goods">
+		update goods set  gno=#{gno}  , goodsname=#{goodsname}  , cateid=#{cateid}  , measureid=#{measureid}  , num=#{num}  , addtime=#{addtime}  , productor=#{productor}  , memo=#{memo}  where goodsid=#{goodsid}
+	</update>
+
+	<!-- 商品表 按主键删除SQL语句  GoodsDAO通过ID(deleteGoods)调用此配置 -->
+	<delete id="deleteGoods" parameterType="String">
+		delete from goods where goodsid = #{goodsid}
+	</delete>
+
+	<!-- 商品表 查询全部商品信息SQL语句  GoodsDAO通过ID(getAllGoods)调用此配置  -->
+	<select id="getAllGoods" resultMap="goodsMap">
+		select a.* , b.catename , c.measurename  from goods a , cate b , measure c  where 1=1 and a.cateid = b.cateid and a.measureid = c.measureid  order by goodsid desc
+	</select>
+
+	<!-- 根据商品编号倒序查询显示最新上架  -->
+	<select id="getGoodsByNews" resultMap="goodsMap">
+		select a.* , b.catename from goods a , cate b where a.cateid = b.cateid
+		order by goodsid desc limit 5
+	</select>
+
+	<!-- 根据商品点击数倒序查询热门商品  -->
+	<select id="getGoodsByHot" resultMap="goodsMap">
+		select a.* , b.catename from goods a , cate b where a.cateid = b.cateid
+		order by hits desc limit 5
+	</select>
+
+	<!-- 根据商品类型查询N个商品信息 首页显示  -->
+	<select id="getGoodsByCate" parameterType="String" resultMap="goodsMap">
+		select a.* , b.catename from goods a , cate b where a.cateid = b.cateid
+		and a.cateid=#{cateid} order by hits desc limit 5
+	</select>
+
+	<!-- 商品表 按主键(goodsid)查询SQL语句 GoodsDAO通过ID(getGoodsById)调用此配置  -->
+	<select id="getGoodsById" parameterType="String" resultMap="goodsMap">
+		select a.* , b.catename , c.measurename  from goods a , cate b , measure c  where 1=1 and a.cateid = b.cateid and a.measureid = c.measureid and goodsid=#{goodsid} order by goodsid desc
+	</select>
+
+	<!-- 商品表 按条件精确查询SQL语句 GoodsDAO通过ID(getGoodsByCond)调用此配置  -->
+	<select id="getGoodsByCond" parameterType="goods" resultMap="goodsMap">
+		select a.* , b.catename , c.measurename  from goods a , cate b , measure c  where 1=1 and a.cateid = b.cateid and a.measureid = c.measureid 
+		<if test="gno != null and '' != gno">
+			and a.gno = #{gno}  
+		</if>
+		<if test="goodsname != null and '' != goodsname">
+			and a.goodsname = #{goodsname}  
+		</if>
+		<if test="cateid != null and '' != cateid">
+			and a.cateid = #{cateid}  
+		</if>
+		<if test="measureid != null and '' != measureid">
+			and a.measureid = #{measureid}  
+		</if>
+		<if test="num != null and '' != num">
+			and a.num = #{num}  
+		</if>
+		<if test="addtime != null and '' != addtime">
+			and a.addtime = #{addtime}  
+		</if>
+		<if test="productor != null and '' != productor">
+			and a.productor = #{productor}  
+		</if>
+		<if test="memo != null and '' != memo">
+			and a.memo = #{memo}  
+		</if>
+	</select>
+
+	<!-- 商品表 按条件模糊查询SQL语句 GoodsDAO通过ID(getGoodsByLike)调用此配置  -->
+	<select id="getGoodsByLike" parameterType="goods" resultMap="goodsMap">
+		select a.* , b.catename , c.measurename  from goods a , cate b , measure c  where 1=1 and a.cateid = b.cateid and a.measureid = c.measureid 
+		<if test="gno != null and '' != gno">
+			and a.gno like CONCAT('%', CONCAT(#{gno}, '%'))
+		</if>
+		<if test="goodsname != null and '' != goodsname">
+			and a.goodsname like CONCAT('%', CONCAT(#{goodsname}, '%'))
+		</if>
+		<if test="cateid != null and '' != cateid">
+			and b.catename like CONCAT('%', CONCAT(#{cateid}, '%'))
+		</if>
+		<if test="measureid != null and '' != measureid">
+			and c.measurename like CONCAT('%', CONCAT(#{measureid}, '%'))
+		</if>
+		<if test="num != null and '' != num">
+			and a.num like CONCAT('%', CONCAT(#{num}, '%'))
+		</if>
+		<if test="addtime != null and '' != addtime">
+			and a.addtime like CONCAT('%', CONCAT(#{addtime}, '%'))
+		</if>
+		<if test="productor != null and '' != productor">
+			and a.productor like CONCAT('%', CONCAT(#{productor}, '%'))
+		</if>
+		<if test="memo != null and '' != memo">
+			and a.memo like CONCAT('%', CONCAT(#{memo}, '%'))
+		</if>
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

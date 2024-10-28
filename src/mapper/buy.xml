@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 配置关于商品采购表的 MyBatis映射文件 -->
+<!-- namespace：必须与对应的接口全类名一致 id:必须与对应接口的某个对应的方法名一致 -->
+<mapper namespace="com.dao.BuyDAO">
+	<resultMap type="buy" id="buyMap">
+		<id property="buyid" column="buyid" />
+		<result property="bno" column="bno" />
+		<result property="goodsid" column="goodsid" />
+		<result property="num" column="num" />
+		<result property="price" column="price" />
+		<result property="total" column="total" />
+		<result property="addtime" column="addtime" />
+		<result property="manager" column="manager" />
+		<result property="memo" column="memo" />
+		<result property="goodsname" column="goodsname" />
+		<!-- 通过外键关联查询  返回封装Goodsname对象 -->
+		<association property="goodsname" column="goodsnameid" select="com.dao.GoodsnameDAO.getGoodsnameById" />
+	</resultMap>
+
+	<!-- 商品采购表 插入SQL语句  BuyDAO通过ID(insertBuy)调用此配置 -->
+	<insert id="insertBuy" parameterType="buy">  
+		insert into buy(buyid  , bno  , goodsid  , num  , price  , total  , addtime  , manager  , memo ) values(#{buyid}  , #{bno}   , #{goodsid}   , #{num}   , #{price}   , #{total}   , #{addtime}   , #{manager}   , #{memo} )
+	</insert>
+
+	<!-- 商品采购表 更新SQL语句  BuyDAO通过ID(updateBuy)调用此配置 -->
+	<update id="updateBuy" parameterType="buy">
+		update buy set  bno=#{bno}  , goodsid=#{goodsid}  , num=#{num}  , price=#{price}  , total=#{total}  , addtime=#{addtime}  , manager=#{manager}  , memo=#{memo}  where buyid=#{buyid}
+	</update>
+
+	<!-- 商品采购表 按主键删除SQL语句  BuyDAO通过ID(deleteBuy)调用此配置 -->
+	<delete id="deleteBuy" parameterType="String">
+		delete from buy where buyid = #{buyid}
+	</delete>
+
+	<!-- 商品采购表 查询全部商品采购信息SQL语句  BuyDAO通过ID(getAllBuy)调用此配置  -->
+	<select id="getAllBuy" resultMap="buyMap">
+		select a.* , b.goodsname  from buy a , goods b  where 1=1 and a.goodsid = b.goodsid  order by buyid desc
+	</select>
+
+	<!-- 商品采购表 按主键(buyid)查询SQL语句 BuyDAO通过ID(getBuyById)调用此配置  -->
+	<select id="getBuyById" parameterType="String" resultMap="buyMap">
+		select a.* , b.goodsname  from buy a , goods b  where 1=1 and a.goodsid = b.goodsid and buyid=#{buyid} order by buyid desc
+	</select>
+
+	<!-- 商品采购表 按条件精确查询SQL语句 BuyDAO通过ID(getBuyByCond)调用此配置  -->
+	<select id="getBuyByCond" parameterType="buy" resultMap="buyMap">
+		select a.* , b.goodsname  from buy a , goods b  where 1=1 and a.goodsid = b.goodsid 
+		<if test="bno != null and '' != bno">
+			and a.bno = #{bno}  
+		</if>
+		<if test="goodsid != null and '' != goodsid">
+			and a.goodsid = #{goodsid}  
+		</if>
+		<if test="num != null and '' != num">
+			and a.num = #{num}  
+		</if>
+		<if test="price != null and '' != price">
+			and a.price = #{price}  
+		</if>
+		<if test="total != null and '' != total">
+			and a.total = #{total}  
+		</if>
+		<if test="addtime != null and '' != addtime">
+			and a.addtime = #{addtime}  
+		</if>
+		<if test="manager != null and '' != manager">
+			and a.manager = #{manager}  
+		</if>
+		<if test="memo != null and '' != memo">
+			and a.memo = #{memo}  
+		</if>
+	</select>
+
+	<!-- 商品采购表 按条件模糊查询SQL语句 BuyDAO通过ID(getBuyByLike)调用此配置  -->
+	<select id="getBuyByLike" parameterType="buy" resultMap="buyMap">
+		select a.* , b.goodsname  from buy a , goods b  where 1=1 and a.goodsid = b.goodsid 
+		<if test="bno != null and '' != bno">
+			and a.bno like CONCAT('%', CONCAT(#{bno}, '%'))
+		</if>
+		<if test="goodsid != null and '' != goodsid">
+			and b.goodsname like CONCAT('%', CONCAT(#{goodsid}, '%'))
+		</if>
+		<if test="num != null and '' != num">
+			and a.num like CONCAT('%', CONCAT(#{num}, '%'))
+		</if>
+		<if test="price != null and '' != price">
+			and a.price like CONCAT('%', CONCAT(#{price}, '%'))
+		</if>
+		<if test="total != null and '' != total">
+			and a.total like CONCAT('%', CONCAT(#{total}, '%'))
+		</if>
+		<if test="addtime != null and '' != addtime">
+			and a.addtime like CONCAT('%', CONCAT(#{addtime}, '%'))
+		</if>
+		<if test="manager != null and '' != manager">
+			and a.manager like CONCAT('%', CONCAT(#{manager}, '%'))
+		</if>
+		<if test="memo != null and '' != memo">
+			and a.memo like CONCAT('%', CONCAT(#{memo}, '%'))
+		</if>
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

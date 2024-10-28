@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 配置关于计量单位表的 MyBatis映射文件 -->
+<!-- namespace：必须与对应的接口全类名一致 id:必须与对应接口的某个对应的方法名一致 -->
+<mapper namespace="com.dao.MeasureDAO">
+	<resultMap type="measure" id="measureMap">
+		<id property="measureid" column="measureid" />
+		<result property="measurename" column="measurename" />
+		<result property="addtime" column="addtime" />
+		<result property="memo" column="memo" />
+	</resultMap>
+
+	<!-- 计量单位表 插入SQL语句  MeasureDAO通过ID(insertMeasure)调用此配置 -->
+	<insert id="insertMeasure" parameterType="measure">  
+		insert into measure(measureid  , measurename  , addtime  , memo ) values(#{measureid}  , #{measurename}   , #{addtime}   , #{memo} )
+	</insert>
+
+	<!-- 计量单位表 更新SQL语句  MeasureDAO通过ID(updateMeasure)调用此配置 -->
+	<update id="updateMeasure" parameterType="measure">
+		update measure set  measurename=#{measurename}  , addtime=#{addtime}  , memo=#{memo}  where measureid=#{measureid}
+	</update>
+
+	<!-- 计量单位表 按主键删除SQL语句  MeasureDAO通过ID(deleteMeasure)调用此配置 -->
+	<delete id="deleteMeasure" parameterType="String">
+		delete from measure where measureid = #{measureid}
+	</delete>
+
+	<!-- 计量单位表 查询全部计量单位信息SQL语句  MeasureDAO通过ID(getAllMeasure)调用此配置  -->
+	<select id="getAllMeasure" resultMap="measureMap">
+		select a.*  from measure a  where 1=1  order by measureid desc
+	</select>
+
+	<!-- 计量单位表 按主键(measureid)查询SQL语句 MeasureDAO通过ID(getMeasureById)调用此配置  -->
+	<select id="getMeasureById" parameterType="String" resultMap="measureMap">
+		select a.*  from measure a  where 1=1 and measureid=#{measureid} order by measureid desc
+	</select>
+
+	<!-- 计量单位表 按条件精确查询SQL语句 MeasureDAO通过ID(getMeasureByCond)调用此配置  -->
+	<select id="getMeasureByCond" parameterType="measure" resultMap="measureMap">
+		select a.*  from measure a  where 1=1 
+		<if test="measurename != null and '' != measurename">
+			and a.measurename = #{measurename}  
+		</if>
+		<if test="addtime != null and '' != addtime">
+			and a.addtime = #{addtime}  
+		</if>
+		<if test="memo != null and '' != memo">
+			and a.memo = #{memo}  
+		</if>
+	</select>
+
+	<!-- 计量单位表 按条件模糊查询SQL语句 MeasureDAO通过ID(getMeasureByLike)调用此配置  -->
+	<select id="getMeasureByLike" parameterType="measure" resultMap="measureMap">
+		select a.*  from measure a  where 1=1 
+		<if test="measurename != null and '' != measurename">
+			and a.measurename like CONCAT('%', CONCAT(#{measurename}, '%'))
+		</if>
+		<if test="addtime != null and '' != addtime">
+			and a.addtime like CONCAT('%', CONCAT(#{addtime}, '%'))
+		</if>
+		<if test="memo != null and '' != memo">
+			and a.memo like CONCAT('%', CONCAT(#{memo}, '%'))
+		</if>
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

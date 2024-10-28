@@ -1,0 +1,120 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>添加管理员信息</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="./hui/css/H-ui.min.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/css/H-ui.admin.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/Hui-iconfont/1.0.8/iconfont.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/layui/css/layui.css" />
+</head>
+
+<body>
+
+	<div id="app">
+		<article class="page-container">
+			<div class="form form-horizontal" id="form-admin-add">
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">用户名：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="username" v-model="username" placeholder="请输入用户名">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">密码：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="password" class="input-text" id="password" v-model="password" placeholder="请输入密码">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">姓名：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="realname" v-model="realname" placeholder="请输入姓名">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">联系方式：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="contact" v-model="contact" placeholder="请输入联系方式">
+					</div>
+				</div>
+				<div class="row cl">
+					<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+						<button class="btn btn-secondary radius" @click.prevent="save()"><i
+								class="Hui-iconfont">&#xe632;</i>提交保存</button>
+						<button class="btn btn-default radius" @click.prevent="reset()">
+							<i class="Hui-iconfont">&#xe68f;</i>取消重置
+						</button>
+					</div>
+				</div>
+			</div>
+		</article>
+	</div>
+
+	<script type="text/javascript" src="./hui/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="./hui/js/H-ui.min.js"></script>
+	<script type="text/javascript" src="./hui/js/H-ui.admin.js"></script>
+
+	<!--此页面业务相关的脚本-->
+	<script type="text/javascript" src="./hui/layui/layui.js"></script>
+	<script type="text/javascript" src="./hui/js/axios.min.js"></script>
+	<script type="text/javascript" src="./hui/js/vue.js"></script>
+	<script type="text/javascript">
+		const vue = new Vue({ // 实例化Vue对象
+			el: '#app',// 绑定作用域
+			data: { //定义数据
+				username: '', // 定义用户名数据
+				password: '', // 定义密码数据
+				realname: '', // 定义姓名数据
+				contact: '', // 定义联系方式数据
+			},
+			methods: {
+				save: function () {
+					let _this = this;
+					var data = {
+						username: _this.username,
+						password: _this.password,
+						realname: _this.realname,
+						contact: _this.contact,
+					};
+					axios.post('http://127.0.0.1:8080/jxc/admin/insertAdmin.action', data).then((result) => {
+						if (result.data.code > 0) {
+							if (window.confirm('保存成功,是否继续添加？')) {
+								_this.reset();
+							} else {
+								var index = parent.layer.getFrameIndex(window.name);
+								parent.location.reload();
+								parent.layer.close(index);
+							}
+						} else {
+							console.log('保存失败,请稍后再试');
+						}
+					});
+				},
+				reset: function () {
+					this.pageLoad();
+				},
+				pageLoad: function () { // 页面加载
+					this.username= '';
+					this.password= '';
+					this.realname= '';
+					this.contact= '';
+					axios.get('http://127.0.0.1:8080/jxc/admin/createAdmin.action').then(result => {
+						_this.bno = result.data.bno;
+					});
+				},
+				validate: function () { // 验证输入非空
+				},
+			},
+			created() { // 生命周期相关的函数
+				let _this = this;
+			},
+		})
+	</script>
+	<!--/ 此页面业务相关的脚本-->
+
+
+</body>
+
+</html>
+

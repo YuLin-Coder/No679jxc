@@ -1,0 +1,201 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>进销存管理系统</title>
+	<link rel="stylesheet" type="text/css" href="./hui/css/H-ui.min.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/css/H-ui.admin.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/Hui-iconfont/1.0.8/iconfont.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/skin/default/skin.css" id="skin" />
+</head>
+
+<body>
+	<div id="app">
+		<header class="navbar-wrapper">
+			<div class="navbar navbar-fixed-top">
+				<div class="container-fluid cl"> <a class="logo navbar-logo f-l mr-10 hidden-xs" href="javascript:;" style="font-weight:bold;font-size:23px;">进销存管理系统</a>
+					<nav id="Hui-userbar" class="nav navbar-nav navbar-userbar hidden-xs">
+						<ul class="cl">
+							<li>欢迎您{{ adminname }}</li>
+							<li class="dropDown dropDown_hover">
+								<a href="javascript:;" class="dropDown_A"> 您的角色 {{ role }} <i class="Hui-iconfont">&#xe6d5;</i></a>
+								<ul class="dropDown-menu menu radius box-shadow">
+									<li><a href="javascript:;" @click="editpwd()">修改密码</a></li>
+									<li><a href="javascript:;" @click="exit()">退出</a></li>
+								</ul>
+							</li>
+
+							<li id="Hui-skin" class="dropDown right dropDown_hover"> <a href="javascript:;"
+									class="dropDown_A" title="换肤"><i class="Hui-iconfont"
+										style="font-size:18px">&#xe62a;</i></a>
+								<ul class="dropDown-menu menu radius box-shadow">
+									<li><a href="javascript:;" data-val="default" title="默认（黑色）">默认（黑色）</a></li>
+									<li><a href="javascript:;" data-val="blue" title="蓝色">蓝色</a></li>
+									<li><a href="javascript:;" data-val="green" title="绿色">绿色</a></li>
+									<li><a href="javascript:;" data-val="red" title="红色">红色</a></li>
+									<li><a href="javascript:;" data-val="yellow" title="黄色">黄色</a></li>
+									<li><a href="javascript:;" data-val="orange" title="橙色">橙色</a></li>
+								</ul>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</header>
+	</div>
+
+	<aside class="Hui-aside">
+		<div class="menu_dropdown bk_2">
+			<dl id="menu-admin">
+				<dt><i class="Hui-iconfont">&#xe62d;</i> 管理员管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i>
+				</dt>
+				<dd>
+					<ul>
+						<li><a data-href="listadmin.html" data-title="管理员列表" href="javascript:;">管理员列表</a></li>
+					</ul>
+				</dd>
+			</dl>
+			<dl id="menu-cate">
+				<dt><i class="Hui-iconfont">&#xe616;</i> 商品类型管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i>
+				</dt>
+				<dd>
+					<ul>
+						<li><a data-href="listcate.html" data-title="商品类型列表" href="javascript:;">商品类型列表</a></li>
+						</li>
+					</ul>
+				</dd>
+			</dl>
+			<dl id="menu-measure">
+				<dt><i class="Hui-iconfont">&#xe616;</i> 计量单位管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i>
+				</dt>
+				<dd>
+					<ul>
+						<li><a data-href="listmeasure.html" data-title="计量单位列表" href="javascript:;">计量单位列表</a></li>
+						</li>
+					</ul>
+				</dd>
+			</dl>
+			<dl id="menu-goods">
+				<dt><i class="Hui-iconfont">&#xe616;</i> 商品信息管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i>
+				</dt>
+				<dd>
+					<ul>
+						<li><a data-href="listgoods.html" data-title="商品列表" href="javascript:;">商品列表</a></li>
+						</li>
+					</ul>
+				</dd>
+			</dl>
+			<dl id="menu-buy">
+				<dt><i class="Hui-iconfont">&#xe616;</i> 商品采购管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i>
+				</dt>
+				<dd>
+					<ul>
+						<li><a data-href="listbuy.html" data-title="商品采购列表" href="javascript:;">商品采购列表</a></li>
+						</li>
+					</ul>
+				</dd>
+			</dl>
+			<dl id="menu-sell">
+				<dt><i class="Hui-iconfont">&#xe616;</i> 商品销售管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i>
+				</dt>
+				<dd>
+					<ul>
+						<li><a data-href="listsell.html" data-title="商品销售列表" href="javascript:;">商品销售列表</a></li>
+						</li>
+					</ul>
+				</dd>
+			</dl>
+			<dl id="menu-broken">
+				<dt><i class="Hui-iconfont">&#xe616;</i> 商品损失管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i>
+				</dt>
+				<dd>
+					<ul>
+						<li><a data-href="listbroken.html" data-title="商品损失列表" href="javascript:;">商品损失列表</a></li>
+						</li>
+					</ul>
+				</dd>
+			</dl>
+		</div>
+	</aside>
+
+	<div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:;" onClick="displaynavbar(this)"></a>
+	</div>
+	<section class="Hui-article-box">
+		<div id="Hui-tabNav" class="Hui-tabNav hidden-xs">
+			<div class="Hui-tabNav-wp">
+				<ul id="min_title_list" class="acrossTab cl">
+					<li class="active">
+						<span title="我的桌面" data-href="welcome.html">我的桌面</span>
+						<em></em>
+					</li>
+				</ul>
+			</div>
+			<div class="Hui-tabNav-more btn-group"><a id="js-tabNav-prev" class="btn radius btn-default size-S"
+					href="javascript:;"><i class="Hui-iconfont">&#xe6d4;</i></a><a id="js-tabNav-next"
+					class="btn radius btn-default size-S" href="javascript:;"><i class="Hui-iconfont">&#xe6d7;</i></a>
+			</div>
+		</div>
+		<div id="iframe_box" class="Hui-article">
+			<div class="show_iframe">
+				<div style="display:none" class="loading"></div>
+				<iframe scrolling="yes" frameborder="0" src="welcome.html"></iframe>
+			</div>
+		</div>
+	</section>
+
+	<div class="contextMenu" id="Huiadminmenu">
+		<ul>
+			<li id="closethis">关闭当前 </li>
+			<li id="closeall">关闭全部 </li>
+		</ul>
+	</div>
+
+	<script type="text/javascript" src="./hui/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="./hui/js/H-ui.min.js"></script>
+	<script type="text/javascript" src="./hui/js/H-ui.admin.js"></script>
+
+  <!--下方是此页面业务相关的脚本-->
+	<script type="text/javascript" src="./hui/jquery.contextmenu/jquery.contextmenu.r2.js"></script>
+	<script type="text/javascript" src="./hui/layui/layui.js"></script>
+	<script type="text/javascript" src="./hui/js/axios.min.js"></script>
+	<script type="text/javascript" src="./hui/js/vue.js"></script>
+	<script type="text/javascript">
+		function openForm(title, url, w, h) {
+			layer_show(title, url, w, h);
+		}
+
+		const vue = new Vue({ // 实例化Vue对象
+			el: '#app',// 绑定作用域
+			data: { //定义数据 用于vue的双向绑定
+				adminname: '',
+				realname: '',
+				role: '',
+			},
+			methods: {
+				exit: function () {
+					if (window.confirm('确定要退出吗？')) {
+						sessionStorage.clear(); // 删除sesstion数据
+						window.location.href = 'index.html';
+					}
+				},
+				editpwd: function () {
+					layer_show('修改密码', 'editpwd.html', 600, 400);
+				},
+				loadPage: function () {
+					this.adminname = sessionStorage.getItem('adminname');
+					this.realname = sessionStorage.getItem('realname');
+					this.role = sessionStorage.getItem('role');
+				},
+			},
+			// 生命周期相关的函数
+			created() {
+				this.loadPage();
+			},
+		})
+	</script>
+</body>
+
+</html>
+
+

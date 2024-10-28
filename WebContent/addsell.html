@@ -1,0 +1,168 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>添加商品销售信息</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="./hui/css/H-ui.min.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/css/H-ui.admin.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/Hui-iconfont/1.0.8/iconfont.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/layui/css/layui.css" />
+</head>
+
+<body>
+
+	<div id="app">
+		<article class="page-container">
+			<div class="form form-horizontal" id="form-admin-add">
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">销售单号：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="sno" v-model="sno" readonly="readonly" >
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">商品：</label>
+					<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+							<select class="select" v-model="goodsid">
+								<option :value="0">---请选择商品---</option>
+								<option :value="item.goodsid" v-for="item in goods">{{ item.goodsname }}</option>
+							</select>
+						</span> </div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">销售数量：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="num" v-model="num" placeholder="请输入销售数量">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">销售单价：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="price" v-model="price" placeholder="请输入销售单价">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">销售日期：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="addtime" v-model="addtime" placeholder="请输入销售日期" @click="getDate5()" readonly="readonly" autocomplete="off">
+					</div>
+				</div>
+
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">经手人：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="manager" v-model="manager" placeholder="请输入经手人">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">备注：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="memo" v-model="memo" placeholder="请输入备注">
+					</div>
+				</div>
+				<div class="row cl">
+					<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+						<button class="btn btn-secondary radius" @click.prevent="save()"><i
+								class="Hui-iconfont">&#xe632;</i>提交保存</button>
+						<button class="btn btn-default radius" @click.prevent="reset()">
+							<i class="Hui-iconfont">&#xe68f;</i>取消重置
+						</button>
+					</div>
+				</div>
+			</div>
+		</article>
+	</div>
+
+	<script type="text/javascript" src="./hui/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="./hui/js/H-ui.min.js"></script>
+	<script type="text/javascript" src="./hui/js/H-ui.admin.js"></script>
+
+	<!--此页面业务相关的脚本-->
+	<script type="text/javascript" src="./hui/layui/layui.js"></script>
+	<script type="text/javascript" src="./hui/js/axios.min.js"></script>
+	<script type="text/javascript" src="./hui/js/vue.js"></script>
+	<script type="text/javascript">
+		const vue = new Vue({ // 实例化Vue对象
+			el: '#app',// 绑定作用域
+			data: { //定义数据
+				sno: '', // 定义销售单号数据
+				goodsid: '0', // 定义商品数据
+				num: '', // 定义销售数量数据
+				price: '', // 定义销售单价数据
+				addtime: '', // 定义销售日期数据
+				manager: '', // 定义经手人数据
+				memo: '', // 定义备注数据
+				goods: {}, // 用来保存商品对象数据
+			},
+			methods: {
+				save: function () {
+					let _this = this;
+					var data = {
+						sno: _this.sno,
+						goodsid: _this.goodsid,
+						num: _this.num,
+						price: _this.price,
+						addtime: _this.addtime,
+						manager: _this.manager,
+						memo: _this.memo,
+					};
+					axios.post('http://127.0.0.1:8080/jxc/sell/insertSell.action', data).then(result => {
+						if (result.data.code > 0) {
+							if (window.confirm('保存成功,是否继续添加？')) {
+								_this.reset();
+							} else {
+								var index = parent.layer.getFrameIndex(window.name);
+								parent.location.reload();
+								parent.layer.close(index);
+							}
+						} else {
+							console.log('保存失败,请稍后再试');
+						    alert(result.data.message);
+						}
+					});
+				},
+				reset: function () {
+					this.pageLoad();
+				},
+				pageLoad: function () { // 页面加载
+					this.sno= '';
+					this.goodsid= '0';
+					this.num= '';
+					this.price= '';
+					this.addtime= '';
+					this.manager= '';
+					this.memo= '';
+					axios.get('http://127.0.0.1:8080/jxc/sell/createSell.action').then(result => {
+						this.sno = result.data.sno;
+					});
+				},
+				validate: function () { // 验证输入非空
+				},
+				getDate5: function () { // 日历点击事件
+					var _this = this;
+					var laydate = layui.laydate;
+					laydate.render({
+						elem: '#addtime',
+						show: true,
+						done: function (value) {
+							_this.addtime = value;
+						}
+					})
+				},
+			},
+			created() { // 生命周期相关的函数
+				let _this = this;
+				axios.get('http://127.0.0.1:8080/jxc/goods/getAllGoods.action').then(result => {
+					_this.goods = result.data;
+				});
+				_this.pageLoad();
+			},
+		})
+	</script>
+	<!--/ 此页面业务相关的脚本-->
+
+
+</body>
+
+</html>
+

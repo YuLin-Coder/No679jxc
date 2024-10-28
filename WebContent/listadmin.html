@@ -1,0 +1,145 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>管理员列表</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="./hui/css/H-ui.min.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/css/H-ui.admin.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/Hui-iconfont/1.0.8/iconfont.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/layui/css/layui.css" />
+</head>
+
+<body>
+	<div id="app">
+		<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 管理员管理 <span
+				class="c-gray en">&gt;</span> 管理员列表 <a class="btn btn-success radius r"
+				style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);"
+				title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+		<div class="page-container">
+			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l">
+					<a href="javascript:;" @click.prevent="datadel()" class="btn btn-danger radius"><i
+							class="Hui-iconfont">&#xe6e2;</i>批量删除</a>
+					<a href="javascript:;" onclick="openForm('添加管理员','addadmin.html','800','500')"
+						class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加管理员</a></span> </div>
+
+			<table class="table table-border table-bordered table-bg">
+				<thead>
+					<tr>
+						<th scope="col" colspan="7">管理员列表</th>
+					</tr>
+					<tr class="text-c">
+						<th>&nbsp;</th>
+						<th>用户名</th>
+						<th>姓名</th>
+						<th>联系方式</th>
+						<th>创建日期</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+
+				<tr class="text-c" v-for="item in admin" :key="item.adminid">
+					<td><input type="checkbox" :value="item.adminid" v-model="ids"></td>
+					<td>{{ item.username }}</td>
+					<td>{{ item.realname }}</td>
+					<td>{{ item.contact }}</td>
+					<td>{{ item.addtime }}</td>
+					<td>&nbsp;&nbsp;<a href="javascript:;" title="编辑" @click="getAdminById(item.adminid)"><i
+								class="Hui-iconfont">&#xe6df;</i></a>&nbsp;&nbsp;<a href="javascript:;"
+							@click="deleteAdmin(item.adminid)" title="删除"><i class="Hui-iconfont">&#xe6e2;</i></a></td>
+				</tr>
+			</table>
+			<!-- 存放分页的容器 -->
+			<div id="layui" class="r"></div>
+		</div>
+	</div>
+
+
+	<script type="text/javascript" src="./hui/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="./hui/js/H-ui.min.js"></script>
+	<script type="text/javascript" src="./hui/js/H-ui.admin.js"></script>
+
+	<script type="text/javascript" src="./hui/layui/layui.js"></script>
+	<script type="text/javascript" src="./hui/js/axios.min.js"></script>
+	<script type="text/javascript" src="./hui/js/vue.js"></script>
+	<script type="text/javascript">
+
+		function openForm(title, url, w, h) {
+			layer_show(title, url, w, h);
+		}
+
+		const vue = new Vue({ // 实例化Vue对象
+			el: '#app',// 绑定作用域
+			data: { //定义数据 用于vue的双向绑定
+				admin: [],
+				ids: [],// 定义批量删除的数组
+				page: {},
+				count: 0,
+				page: 1,
+				limit: 10,
+			},
+			created() { // 生命周期相关的函数
+				this.loadTable(); // 调用查询管理员信息的方法
+			},
+			methods: {
+				loadTable: function () { // 查询管理员信息的函数
+					let _this = this;
+					axios.get('http://127.0.0.1:8080/jxc/admin/getAdminByPage.action?page=' + _this.page + '&limit=' + _this.limit).then(result => {
+						_this.admin = result.data.data;
+						_this.count = result.data.count;
+						if (_this.page == 1) {
+							_this.loadPage();
+						}
+					});
+				},
+				loadPage: function () { // 调用LayUI分页标签的使用
+					layui.use(['laypage'], function () {
+						const laypage = layui.laypage;
+						laypage.render({
+							elem: 'layui', // 定义标签显示
+							count: vue.count, //数据量
+							limit: vue.limit,//每页限制
+							jump: function (obj, first) {
+								if (!first) {
+									vue.page = obj.curr;
+									vue.loadTable();
+								}
+							}
+						});
+					})
+				},
+				deleteAdmin: function (adminid) { // 根据主键删除管理员信息
+					let _this = this;
+					if (window.confirm('确定要删除这条记录吗？')) {
+						axios.get('http://127.0.0.1:8080/jxc/admin/deleteAdmin.action?id=' + adminid).then(result => {
+							if (result.data.code > 0) {
+								_this.loadTable();
+							} else {
+								alert('系统错误，请稍后再试');
+							}
+						});
+					}
+				},
+				datadel: function () { // 批量删除管理员信息
+					let _this = this;
+					if (window.confirm('确定要批量删除记录吗？')) {
+						axios.post('http://127.0.0.1:8080/jxc/admin/deleteAdminByIds.action', _this.ids).then(result => {
+							if (result.data.code > 0) {
+								_this.loadTable();
+							} else {
+								alert('系统错误，请稍后再试');
+							}
+						});
+					}
+				},
+				getAdminById: function (adminid) { // 编辑按钮点击事件
+					let url = 'editadmin.html?id=' + adminid;
+					layer_show('编辑管理员', url, '', '');
+				},
+			},
+		});
+	</script>
+
+</body>
+
+</html>
+

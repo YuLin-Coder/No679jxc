@@ -1,0 +1,105 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>进销存管理系统</title>
+  <link rel="stylesheet" type="text/css" href="./hui/css/H-ui.min.css" />
+  <link rel="stylesheet" type="text/css" href="./hui/css/H-ui.login.css" />
+  <link rel="stylesheet" type="text/css" href="./hui/Hui-iconfont/1.0.8/iconfont.css" />
+</head>
+
+<body>
+  <div id="app">
+    <div class="loginWraper">
+      <div id="loginform" class="loginBox">
+      	<p style="text-align: center;
+    font-size: 35px;
+    font-weight: bold;
+    color: white;
+    letter-spacing: 1px;
+    margin-bottom: 30px;">进销存管理系统</p>
+        <div class="form form-horizontal">
+          <div class="row cl">
+            <label class="form-label col-xs-3"><i class="Hui-iconfont">&#xe60d;</i></label>
+            <div class="formControls col-xs-8">
+              <input id="username" v-model="username" type="text" placeholder="请输入用户名" class="input-text size-L">
+            </div>
+          </div>
+          <div class="row cl">
+            <label class="form-label col-xs-3"><i class="Hui-iconfont">&#xe60e;</i></label>
+            <div class="formControls col-xs-8">
+              <input id="password" v-model="password" type="password" placeholder="请输入密码" class="input-text size-L">
+            </div>
+          </div>
+          <div class="row cl">
+            <div class="formControls col-xs-8 col-xs-offset-3">
+              <button class="btn btn-success radius size-L" @click="toLogin()">
+                &nbsp;登&nbsp;&nbsp;&nbsp;&nbsp;录&nbsp;</button>&nbsp;
+              <button class="btn btn-default radius size-L" @click="reset()">
+                &nbsp;取&nbsp;&nbsp;&nbsp;&nbsp;消&nbsp;
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer">版权所有</div>
+  </div>
+  <script type="text/javascript" src="./hui/jquery/1.9.1/jquery.min.js"></script>
+  <script type="text/javascript" src="./hui/js/H-ui.min.js"></script>
+
+  <!--下方是此页面业务相关的脚本-->
+  <script type="text/javascript" src="./hui/js/axios.min.js"></script>
+  <script type="text/javascript" src="./hui/js/vue.js"></script>
+  <script type="text/javascript">
+    const vue = new Vue({ // 实例化Vue对象
+      el: '#app',// 绑定作用域
+      data: { //定义数据 用于vue的双向绑定
+        username: '',
+        password: '',
+      },
+      methods: {
+        toLogin: function () {
+          let _this = this;
+          if (_this.username == '') {
+            alert('请输入用户名');
+            return;
+          }
+          if (_this.password == '') {
+            alert('请输入密码');
+            return;
+          }
+          var data = {
+            username: _this.username,
+            password: _this.password,
+          }
+          axios.post('http://127.0.0.1:8080/jxc/login/login.action', data).then(result => {
+            if (result.data.success) {
+              sessionStorage.setItem('adminid', result.data.adminid);
+              sessionStorage.setItem('adminname', result.data.adminname);
+              sessionStorage.setItem('realname', result.data.realname);
+              sessionStorage.setItem('role', result.data.role);
+              window.location.href = 'main.html';
+            } else {
+              alert(result.data.message);
+              _this.reset();
+              return;
+            }
+          })
+        },
+        reset: function () { // 重置按钮点击事件
+          this.username = '';
+          this.password = '';
+        },
+      },
+      // 生命周期相关的函数
+      created() {
+          sessionStorage.clear(); // 
+      },
+    })
+  </script>
+</body>
+
+</html>
+

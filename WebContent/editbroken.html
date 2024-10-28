@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>编辑商品损失信息</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="./hui/css/H-ui.min.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/css/H-ui.admin.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/Hui-iconfont/1.0.8/iconfont.css" />
+	<link rel="stylesheet" type="text/css" href="./hui/layui/css/layui.css" />
+</head>
+
+<body>
+	<div id="app">
+		<article class="page-container">
+			<div class="form form-horizontal" id="form-admin-add">
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">损失单号：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="bno" v-model="bno" readonly="readonly" >
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">商品：</label>
+					<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+							<select class="select" v-model="goodsid">
+								<option :value="item.goodsid" v-for="item in goods">{{ item.goodsname }}</option>
+							</select>
+						</span> </div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">损失原因：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="reason" v-model="reason">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">损失数量：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="num" v-model="num">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">损失日期：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="addtime" v-model="addtime" @click="getDate4()" readonly="readonly" autocomplete="off">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">经手人：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="manager" v-model="manager">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">损失处理：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="opers" v-model="opers">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">备注：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" id="memo" v-model="memo">
+					</div>
+				</div>
+				<div class="row cl">
+					<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+						<button class="btn btn-secondary radius" @click.prevent="update()"><i
+								class="Hui-iconfont">&#xe632;</i>提交保存</button>
+						<button class="btn btn-default radius" @click.prevent="reset()">
+							<i class="Hui-iconfont">&#xe68f;</i>取消重置
+						</button>
+					</div>
+				</div>
+			</div>
+		</article>
+	</div>
+
+	<script type="text/javascript" src="./hui/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="./hui/js/H-ui.min.js"></script>
+	<script type="text/javascript" src="./hui/js/H-ui.admin.js"></script>
+
+<!--此页面业务相关的脚本-->
+	<script type="text/javascript" src="./hui/layui/layui.js"></script>
+	<script type="text/javascript" src="./hui/js/axios.min.js"></script>
+	<script type="text/javascript" src="./hui/js/vue.js"></script>
+	<script type="text/javascript">
+
+		const vue = new Vue({
+			el: '#app',// 绑定作用域
+			data: { //定义数据 用于vue的双向绑定
+				brokenid: '',
+				bno: '',
+				goodsid: '',
+				reason: '',
+				num: '',
+				addtime: '',
+				manager: '',
+				opers: '',
+				memo: '',
+				goods: {},// 用来保存goods对象数据
+			},
+			methods: {
+				getUrlParam: function () {
+					var name, value;
+					var str = location.href; // 取得整个地址栏
+					var num = str.indexOf("?"); // 定位参数起始位置
+					str = str.substr(num + 1); // 取得所有参数 
+					var arr = str.split("&"); // 各个参数放到数组里
+					for (var i = 0; i < arr.length; i++) {
+						num = arr[i].indexOf("=");
+						if (num > 0) {
+							name = arr[i].substring(0, num);
+							value = arr[i].substr(num + 1);
+							this.brokenid = value; // 确认主键参数
+						}
+					}
+				},
+				loadPage: function () {
+					let _this = this;
+					axios.get('http://127.0.0.1:8080/jxc/broken/getBrokenById.action?id=' + _this.brokenid).then(result => {
+						_this.bno= result.data.bno;
+						_this.goodsid= result.data.goodsid;
+						_this.reason= result.data.reason;
+						_this.num= result.data.num;
+						_this.addtime= result.data.addtime;
+						_this.manager= result.data.manager;
+						_this.opers= result.data.opers;
+						_this.memo= result.data.memo;
+					});
+				},
+				reset: function () {
+					this.loadPage();
+				},
+				update: function () {
+					let _this = this;
+					var data = {
+						brokenid: _this.brokenid,
+						bno: _this.bno,
+						goodsid: _this.goodsid,
+						reason: _this.reason,
+						num: _this.num,
+						addtime: _this.addtime,
+						manager: _this.manager,
+						opers: _this.opers,
+						memo: _this.memo,
+					};
+					axios.post('http://127.0.0.1:8080/jxc/broken/updateBroken.action', data).then(result => {
+						if (result.data.code > 0) {
+							var index = parent.layer.getFrameIndex(window.name);
+							parent.location.reload();
+							parent.layer.close(index);
+						} else {
+							alert('修改失败');
+						}
+					});
+				},
+				getDate4: function () { // 日历点击事件
+					var _this = this;
+					var laydate = layui.laydate;
+					laydate.render({
+						elem: '#addtime',
+						show: true,
+						done: function (value) {
+							_this.addtime = value;
+						}
+					})
+				},
+			},
+
+			created() { // 生命周期相关的函数
+				this.getUrlParam();
+				this.loadPage();
+				let _this = this;
+				axios.get('http://127.0.0.1:8080/jxc/goods/getAllGoods.action').then(result => {
+					_this.goods = result.data;
+				});
+			},
+		})
+	</script>
+	<!--/ 此页面业务相关的脚本-->
+
+</body>
+
+</html>
+
